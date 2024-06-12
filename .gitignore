@@ -1,2 +1,9 @@
 instrutions.txt
 pyvenv.cfg
+bin/
+include/
+lib/
+path/
+get-pip.py
+path/to/venv/
+lib/python3.12/site-packages/
