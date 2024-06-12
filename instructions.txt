@@ -1,0 +1,2 @@
+1. source /Users/pearlnatalia/Desktop/car/bin/activate
+2. python3 -m venv /Users/pearlnatalia/Desktop/car
