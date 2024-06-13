@@ -1,0 +1,13 @@
+instructions.txt
+pyvenv.cfg
+bin/
+include/
+lib/
+path/
+get-pip.py
+path/to/venv/
+lib/python3.12/site-packages/
+output_videos/
+video_data.db
+delete.py
+show.py
