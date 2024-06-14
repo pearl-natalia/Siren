@@ -71,10 +71,10 @@ def retrieve(date, time):
 
 # retrieving data from terminal
 if len(sys.argv) >= 2:
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 2: # mm-dd-yyyy hh:mm
         date = "" 
         time = sys.argv[1]
-    elif len(sys.argv) >= 3:
+    elif len(sys.argv) >= 3: # hh:mm
         date = sys.argv[1]
         time = sys.argv[2]        
     retrieve(date, time)
