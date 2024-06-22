@@ -1,0 +1,4 @@
+myenv/
+output_videos/
+.env
+.DS_Store
