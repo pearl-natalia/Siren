@@ -10,6 +10,7 @@ for filename in os.listdir(directory):
         os.remove(file_path)
         print(f"Deleted {filename}")
 
+#database
 conn = sqlite3.connect('/Users/pearlnatalia/Desktop/car/video_data.db')
 cursor = conn.cursor()
 
