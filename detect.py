@@ -106,7 +106,6 @@ def main():
 
     video_creation_time = get_video_creation_time("/Users/pearlnatalia/Desktop/car/test_images" + filename + ".mp4")
    
-
     input_path = "/Users/pearlnatalia/Desktop/car/output_frames/"+filename+"_frames/"
     for frame in os.listdir(input_path):
         if(frame==".DS_Store"):
