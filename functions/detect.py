@@ -2,6 +2,7 @@ import argparse, os, supervision as sv, numpy as np
 import cv2, tempfile, time, sqlite3, tempfile
 from roboflow import Roboflow
 from supervision import Detections
+from dotenv import load_dotenv
 
 
 def saturate_image(frame):
@@ -19,7 +20,7 @@ def extract_frames(filename):
     frame_path = "/Users/pearlnatalia/Desktop/car/output_frames/"
     database_path = "/Users/pearlnatalia/Desktop/car/data/" + filename + ".db"
 
-    INTERVAL = 0.3  # interval in seconds
+    INTERVAL = 0.3 # in seconds
 
     cap = cv2.VideoCapture(video_path + filename + ".mp4")
     frame_num = 1
@@ -36,8 +37,6 @@ def extract_frames(filename):
         if current_time >= next_frame_time:
             insert_in_database(database_path, "timestamp", current_time-start_time, filename)
             frame = saturate_image(frame)
-
-            # saving image
             output_path = frame_path + filename + "_frames"
             os.makedirs(output_path, exist_ok=True)
             frame_file_path = os.path.join(output_path, f"{frame_num}.JPEG")
@@ -54,7 +53,6 @@ def extract_frames(filename):
             # exif_bytes = piexif.dump(exif_dict)
             # piexif.insert(exif_bytes, frame_file_path)
 
-            # Update the next frame capture time
             next_frame_time += INTERVAL
             frame_num += 1
     cap.release()
@@ -139,16 +137,15 @@ def order_positions(filtered_positions, filtered_classes):
 def create_database(filename):
     conn = sqlite3.connect("/Users/pearlnatalia/Desktop/car/data/" + filename + ".db")
     cursor = conn.cursor()
-    cursor.execute(f'''
-            CREATE TABLE IF NOT EXISTS {filename} (
-                id INTEGER PRIMARY KEY,
-                timestamp TEXT,
-                date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                coordinates TEXT,
-                stop_signs BOOLEAN DEFAULT 0,
-                traffic_colours TEXT
-            )
-        ''')
+    cursor.execute(f''' 
+        CREATE TABLE IF NOT EXISTS {filename} (
+        id INTEGER PRIMARY KEY,
+        timestamp TEXT,
+        date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        coordinates TEXT,
+        stop_signs BOOLEAN DEFAULT 0,
+        traffic_colours TEXT
+        )''')
     conn.commit()
     conn.close()
 
@@ -185,12 +182,13 @@ def main():
     frame_path = "/Users/pearlnatalia/Desktop/car/output_frames/"+filename+"_frames/"
     database_path = "/Users/pearlnatalia/Desktop/car/data/" + filename + ".db"
 
-    # Video --> frames
+    # video --> frames
     create_database(filename)
     extract_frames(filename)
 
     # API
-    rf = Roboflow(api_key="hFw578qvMHkY4axNMAyC")
+    load_dotenv(dotenv_path = "/Users/pearlnatalia/Desktop/car/.env")
+    rf = Roboflow(os.getenv("ROBOFLOW_API_KEY"))
     traffic_project = rf.workspace().project("traffic-light-detection-h8cvg")
     traffic_model = traffic_project.version(2).model
     stop_project = rf.workspace().project("stop-sign-detection-1")
@@ -203,6 +201,7 @@ def main():
         detections = Detections.from_inference(result)
         return detections
     
+    # analyzing frames
     for frame in os.listdir(frame_path):
         if(frame==".DS_Store"): continue
         output_path = frame_path+"/"+frame
