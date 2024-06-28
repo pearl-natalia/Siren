@@ -1,0 +1,51 @@
+X,Y,Name,Status,Type,Ward
+-79.597818,43.749285,Martin Grove Rd. North of Garfella Dr.,Active,Planned Speed Camera,1 - Etobicoke North
+-79.579997,43.735075,"John Garland Boulevard, near Kendleton Drive (Etobicoke North)",Active,Planned Speed Camera,1 - Etobicoke North
+-79.56232,43.650832,"The East Mall, south of Capri Road (Etobicoke Centre)",Active,Planned Speed Camera,2 - Etobicoke Centre
+-79.522876,43.685184,"La Rose Avenue, east of Griggsden Avenue (Etobicoke Centre)",Active,Planned Speed Camera,2 - Etobicoke Centre
+-79.49851,43.621136,"Algoma Street, east of Royal York Road (Etobicoke-Lakeshore)",Active,Planned Speed Camera,3 - Etobicoke-Lakeshore
+-79.518772,43.597826,"Lake Shore Boulevard West, near Twentieth Street (Etobicoke-Lakeshore)",Active,Planned Speed Camera,3 - Etobicoke-Lakeshore
+-79.476247,43.642648,"Windermere Avenue, near St. Olave’s Road (Parkdale-High Park)",Active,Planned Speed Camera,4 - Parkdale-High Park
+-79.473735,43.661893,"Annette Street, near Laws Street (Parkdale-High Park)",Active,Planned Speed Camera,4 - Parkdale-High Park
+-79.489501,43.684046,"Guestville Avenue, near Dennis Avenue (York South-Weston)",Active,Planned Speed Camera,5 - York South-Weston
+-79.490609,43.714364,"Culford Road, north of Burr Avenue (York South-Weston)",Active,Planned Speed Camera,5 - York South-Weston
+-79.488666,43.725189,"Wilson Avenue, near 1196 Wilson Ave. (York Centre)",Active,Planned Speed Camera,6 - York Centre
+-79.501182,43.740819,"Northover Street, south of Sheppard Avenue West (York Centre)",Active,Planned Speed Camera,6 - York Centre
+-79.525195,43.767767,"Shoreham Drive, west of Gosford Boulevard (Humber River-Black Creek)",Active,Planned Speed Camera,7 - Humber River-Black Creek
+-79.517691,43.762061,"Stong Court, west of Driftwood Avenue (Humber River-Black Creek)",Active,Planned Speed Camera,7 - Humber River-Black Creek
+-79.41928,43.740445,"Wilson Avenue, west of Belgrave Avenue (Eglinton-Lawrence)",Active,Planned Speed Camera,8 - Eglinton-Lawrence
+-79.443083,43.707256,"Marlee Avenue, south of Hillmount Avenue (Eglinton-Lawrence)",Active,Planned Speed Camera,8 - Eglinton-Lawrence
+-79.429916,43.64576,"Dufferin Street, near Waterloo Avenue (Davenport)",Active,Planned Speed Camera,9 - Davenport
+-79.424509,43.655644,"Concord Avenue, north of College Street (Davenport)",Active,Planned Speed Camera,9 - Davenport
+-79.400836,43.652337,"Dundas Street West, near Augusta Avenue (Spadina-Fort York)",Active,Planned Speed Camera,10 - Spadina-Fort York
+-79.365669,43.649374,"The Esplanade, east of Princess Street (Spadina-Fort York)",Active,Planned Speed Camera,10 - Spadina-Fort York
+-79.398111,43.678061,"Avenue Road, near Macpherson Avenue (University-Rosedale)",Active,Planned Speed Camera,10 - Spadina-Fort York
+-79.414771,43.657563,"Clinton Street, north of College Street (University-Rosedale)",Active,Planned Speed Camera,11 - University-Rosedale
+-79.389622,43.699773,"Davisville Avenue, near Acacia Road (Toronto-St. Paul’s)",Active,Planned Speed Camera,12 - Toronto-St. Paul’s
+-79.442306,43.692751,"Bansley Avenue, south of Vaughan Road (Toronto-St. Paul’s)",Active,Planned Speed Camera,12 - Toronto-St. Paul’s
+-79.375515,43.665761,"Homewood Avenue, near Maitland Place (Toronto Centre)",Active,Planned Speed Camera,13 - Toronto Centre
+-79.36667,43.660985,"Parliament Street, north of Oak Street (Toronto Centre)",Active,Planned Speed Camera,13 - Toronto Centre
+-79.333289,43.683561,"Greenwood Avenue, south of Glebeholme Boulevard (Toronto-Danforth)",Active,Planned Speed Camera,14 - Toronto-Danforth
+-79.332021,43.695248,"Plains Road, near Milton Road (Toronto-Danforth)",Active,Planned Speed Camera,14 - Toronto-Danforth
+-79.386778,43.71941,"Blythwood Road, near Blyth Hill Road (Don Valley West)",Active,Planned Speed Camera,15 - Don Valley West
+-79.355599,43.732862,"Leslie Street, south of Lawrence Avenue East (Don Valley West)",Planned,Planned Speed Camera,15 - Don Valley West
+-79.320574,43.762331,"York Mills Road, east of Rayoak Drive (Don Valley East) ",Active,Planned Speed Camera,16 - Don Valley East
+-79.328609,43.712425,"Grenoble Drive, west of Spanbridge Road (Don Valley East)",Active,Planned Speed Camera,16 - Don Valley East
+-79.336854,43.787647,"Van Horne Avenue, west of Brian Drive (Don Valley North)",Active,Planned Speed Camera,17 - Don Valley North
+-79.34287,43.769518,"Parkway Forest Drive, near 25 Parkway Forest Dr. (Don Valley North)",Active,Planned Speed Camera,17 - Don Valley North
+-79.427723,43.784838,"Drewry Avenue, east of Norwin Street (Willowdale)",Active,Planned Speed Camera,18 - Willowdale
+-79.425205,43.768982,"Ellerslie Avenue, west of Diagonal Road (Willowdale)",Active,Planned Speed Camera,18 - Willowdale
+-79.297675,43.712846,"Victoria Park Avenue, near Tiago Avenue (Beaches-East York)",Active,Planned Speed Camera,19 - Beaches-East York
+-79.300846,43.692917,"Secord Avenue, near Palmer Avenue (Beaches-East York)",Active,Planned Speed Camera,19 - Beaches-East York
+-79.268871,43.708831,"Birchmount Road, south of Sadler Drive (Scarborough Southwest)",Active,Planned Speed Camera,20 - Scarborough Southwest
+-79.225107,43.733289,"Bellamy Road, south-north of Kingston Road (Scarborough Southwest)",Active,Planned Speed Camera,20 - Scarborough Southwest
+-79.256899,43.736499,"Gilder Drive, east of Midland Avenue (Scarborough Centre)",Active,Planned Speed Camera,21 - Scarborough Centre
+-79.239288,43.756885,"Lawrence Avenue East, west of Ben Stanton Boulevard (Scarborough Centre)",Active,Planned Speed Camera,21 - Scarborough Centre
+-79.326893,43.813466,"Bamburgh Circle, near 125 Bamburgh Cir. (Scarborough-Agincourt)",Active,Planned Speed Camera,22 - Scarborough-Agincourt
+-79.330985,43.797534,"Chester Le Boulevard, near Pettibone Square (Scarborough-Agincourt)",Active,Planned Speed Camera,22 - Scarborough-Agincourt
+-79.275719,43.798275,"Huntingwood Drive, near Mollard Road (Scarborough North)",Active,Planned Speed Camera,23 - Scarborough North
+-79.276646,43.789106,"Heather Road, east of Glen Watford Drive (Scarborough North)",Active,Planned Speed Camera,23 - Scarborough North
+-79.212245,43.786406,"Military Trail, near 341 Military Tr. (Scarborough-Guildwood)",Active,Planned Speed Camera,24 - Scarborough-Guildwood
+-79.215816,43.747012,"Gatesview Avenue, east of Cedar Drive (Scarborough-Guildwood)",Active,Planned Speed Camera,24 - Scarborough-Guildwood
+-79.207076,43.818182,"Sewells Road, west of Glenheather Terrace (Scarborough-Rouge Park)",Active,Planned Speed Camera,25 - Scarborough-Rouge Park
+-79.149648,43.785089,"Centennial Road, south of Cherrydale Court (Scarborough-Rouge Park) ",Active,Planned Speed Camera,25 - Scarborough-Rouge Park

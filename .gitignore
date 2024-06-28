@@ -1,3 +1,4 @@
 myenv/
 .env
 .DS_Store
+geolocation/maps.html

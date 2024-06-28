@@ -1,0 +1,36 @@
+﻿OBJECTID,MUN,CAMERA_NUM,NAME,Street,StrInt1,StrInt2,Latitude,Longitude,x,y
+1,Brampton,4,Airport Road @ Williams Parkway,Airport Road,Williams Parkway,,43.7532868004831,-79.7088789771569,-8873152.20868514,5427343.113341
+2,Mississauga,11,Derry Road @ Airport Road,Derry Road,Airport Road,,43.7035904035999,-79.6424805366196,-8865760.76524657,5419687.43288558
+3,Mississauga,12,Derry Road @ Rexwood Road,Derry Road,Rexwood Road,,43.7162787219445,-79.6272879771314,-8864069.53684728,5421641.45220779
+4,Mississauga,24,Mississauga Rd @ Meadowvale Boulevard,Mississauga Rd,Meadowvale Boulevard,,43.6123379331509,-79.7551267893381,-8878300.49182811,5405646.58577197
+5,Mississauga,22,Erin Mills Parkway @ Folkway Drive,Erin Mills Parkway,Folkway Drive,,43.5508547481423,-79.6898804493891,-8871037.29957252,5396198.29394774
+6,Brampton,25,Queen Street East @ West Drive/Laurelcrest Street,Queen Street East,West Drive,Laurelcrest Street,43.7090440231584,-79.7344580376793,-8875999.65714439,5420527.24676228
+7,Mississauga,14,Derry Road @ Winston Churchill Boulevard,Derry Road,Winston Churchill Boulevard,,43.5881459331497,-79.7711106663716,-8880079.80920723,5401927.78214407
+8,Mississauga,13,Derry Road @ Tomken Road,Derry Road,Tomken Road,,43.6656502247406,-79.6848797723467,-8870480.62770546,5413847.05653287
+9,Brampton,28,Steeles Avenue @ Bramalea Road,Steeles Avenue,Bramalea Road,,43.7048831958046,-79.690529831172,-8871109.58996586,5419886.50546655
+10,Brampton,2,Airport Road @ Queen Street East,Airport Road,Queen Street East,,43.7435221441894,-79.6958385178415,-8871700.55083475,5425838.37621533
+11,Mississauga,21,Erin Mills Parkway @ Eglinton Avenue West,Erin Mills Parkway,Eglinton Avenue West,,43.5588621433206,-79.7067412516782,-8872914.23617341,5397428.2662717
+12,Brampton,21,Steeles Avenue East @ Resolution Drive,Steeles Avenue East,Resolution Drive,,43.6780420679872,-79.7199268069847,-8874382.04712009,5415754.20635416
+13,Brampton,30,Steeles Avenue East @ Bramalea GO Station,Steeles Avenue East,Bramalea GO Station,,43.7025979097913,-79.69295173315,-8871379.194924,5419534.6044941
+14,Mississauga,15,Derry Road West @ Financial Drive,Derry Road West,Financial Drive,,43.6117368942775,-79.7492439046772,-8877645.611889,5405554.17577145
+15,Brampton,19,Dixie Road @ Orenda Road/Birchbank Road,Dixie Road,Orenda Road,Birchbank Road,43.7016430924663,-79.7105361221644,-8873336.68076894,5419387.58029796
+16,Mississauga,33,Winston Churchill Boulevard @ Bromsgrove Road,Winston Churchill Boulevard,Bromsgrove Road,,43.500552863595,-79.6512401897049,-8866735.8836791,5388475.42984158
+17,Mississauga,16,Derry Road West @ Meadowvale Boulevard/Creditview,Derry Road West,Meadowvale Boulevard,Creditview,43.614122074477,-79.7447405959187,-8877144.30571521,5405920.90395391
+18,Mississauga,7,Britannia Road West @ Latimer Drive,Britannia Road West,Latimer Drive,,43.6091796820832,-79.6990026583406,-8872052.7801253,5405161.01373631
+19,Mississauga,17,Derry Road West @ Shelter Bay Road/Copenhagen,Derry Road West,Shelter Bay Road,Copenhagen,43.5908592796379,-79.7681568082149,-8879750.98714358,5402344.80438984
+20,Brampton,3,Airport Road @ Steeles Avenue East,Airport Road,Steeles Avenue East,,43.7237275051739,-79.669133646573,-8868727.77701961,5422788.76795008
+21,Brampton,20,Dixie Road @ Queen Street East,Dixie Road,Queen Street East,,43.7148398841407,-79.7280674823077,-8875288.2636056,5421419.84759923
+22,Brampton,26,Queen Street East @ Torbram Road,Queen Street East,Torbram Road,,43.734088091349,-79.7067156262598,-8872911.38529713,5424384.81812934
+23,Brampton,1,Airport Road @ Bovaird Drive/Castlemore Road,Airport Road,Bovaird Drive,Castlemore Road,43.7633422978916,-79.7224071485471,-8874658.15841565,5428892.92581035
+24,Brampton,5,Bovaird Drive West @ Brisdale Drive/Pertosa Drive,Bovaird Drive West,Brisdale Drive,Pertosa Drive,43.6831524440572,-79.8118817552722,-8884618.42844823,5416540.82599415
+25,Brampton,32,Steeles Avenue West @ Tait Boulevard/Windmill,Steeles Avenue West,Tait Boulevard,Windmill,43.653613649142,-79.7468881313116,-8877383.3687285,5411994.95989593
+26,Brampton,29,Steeles Avenue @ Rutherford Road/First Gulf Blvd.,Steeles Avenue,Rutherford Road,First Gulf Blvd.,43.6805797089741,-79.7172456560902,-8874083.58269791,5416144.80720243
+27,Mississauga,18,Derry Road West @ Syntex Drive/Syntex Court,Derry Road West,Syntex Drive,Syntex Court,43.605043783033,-79.7546187568568,-8878243.93782089,5404525.16875565
+28,Mississauga,27,Queensway East @ Camilla Road,Queensway East,Camilla Road,,43.5776698661238,-79.6035457386633,-8861426.56074214,5400317.86208664
+29,Mississauga,9,Britannia Road West @ Tillsdown Dr/River Grove Ave,Britannia Road West,Tillsdown Dr,River Grove Ave,43.5950235848095,-79.7148327458929,-8873814.97783188,5402984.8656885
+30,Mississauga,10,Cawthra Road @ Atwater Ave,Cawthra Road,Atwater Ave,,43.5746601826628,-79.5731490010924,-8858042.81028727,5399855.39764423
+31,Mississauga,6,Britannia Road West @ Grossbeak Dr/Delle Donne Dr,Britannia Road West,Grossbeak Dr,Delle Donne Dr,43.5614725675469,-79.7524899311751,-8878006.95752467,5397829.27434689
+32,Brampton,23,Mayfield Road @ Kennedy Road,Mayfield Road,Kennedy Road,,43.7436625245659,-79.814482578343,-8884907.95144335,5425860.00628509
+33,Mississauga,8,Britannia Road West @ Rodeo Drive/Belgrave Road,Britannia Road West,Rodeo Drive,Belgrave Road,43.614769622938,-79.692582327457,-8871338.07198834,5406020.46923327
+34,Mississauga,35,Dixie Road @ Bloor Street,Dixie Road,Bloor Street,,43.6167801451576,-79.5945895342201,-8860429.56069096,5406329.60799802
+35,Unknown,36,Finch Avenue @ Darcel Avenue/Longo Circle,Finch Avenue,Darcel Avenue,Longo Circle,43.7333751997386,-79.6338028648158,-8864794.77122748,5424274.98871032
