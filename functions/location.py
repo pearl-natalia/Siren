@@ -1,6 +1,7 @@
-import os, time, folium, csv, requests
+import os, time, folium, csv, requests, timedelta
 from dotenv import load_dotenv
 from pyicloud import PyiCloudService
+from datetime import timedelta
 
 def load_api():
     # Load environment variables from .env file
@@ -60,7 +61,7 @@ def get_street_name(api_key, lat, long):
         return data['items'][0]['address']['street']
     return None
 
-def get_driving_distance(api_key, red_coordinate, current_coordinate):
+def get_driving_distance(api_key, red_coordinate, current_coordinate):    
     base_url = "https://router.hereapi.com/v8/routes"
     params = {
         "transportMode": "car",
@@ -72,10 +73,12 @@ def get_driving_distance(api_key, red_coordinate, current_coordinate):
     response = requests.get(base_url, params=params)
     if response.status_code == 200:
         data = response.json()
+        print(data)
         return data['routes'][0]['sections'][0]['summary']['length']
     return -1
 
 def format_address(current_street):
+    if(current_street is None): return None
     replacements = {
         " N": " North", " E": " East", " S": " South", " W": " West",
         " Rd": " Road", " St": " Street", " Av": " Avenue",
@@ -107,6 +110,7 @@ def get_red_light_camera(lat, long):
     API_KEY = os.getenv("HERE_API_KEY")
    
     current_street = format_address(get_street_name(API_KEY, lat, long))
+    if(current_street is None): return None
     
     for row in range(start-1, end+1):
         values = get_csv_value(row)
@@ -129,12 +133,59 @@ def get_red_light_camera(lat, long):
         print("No red light cameras near", current_street)
         return None
 
+def get_speed(cur_lat, cur_long, file_path, cur_time, interval):
+    prev_lat, prev_long = 0.0, 0.0
+    boolean = False
+    cur_time = cur_time.split(':')
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        if lines:
+            line = lines[-1].strip()
+            prev_lat, prev_long = line.strip().split(', ')[0], line.strip().split(', ')[1]
+            prev_time = line.split("Time: ")[-1].strip().split(':')
+
+
+            time_difference = timedelta(hours=int(cur_time[0]), minutes=int(cur_time[1]), seconds=int(cur_time[2])) - \
+                timedelta(hours=int(prev_time[0]), minutes=int(prev_time[1]), seconds=int(prev_time[2]))
+            
+            if(abs(time_difference.total_seconds()) <= 60): #prev location = recorded less than a minute ago
+                # reverse geocoding api
+                load_dotenv(dotenv_path="/Users/pearlnatalia/Desktop/car/.env")
+                api_key = os.getenv("HERE_API_KEY")
+                print(cur_lat, cur_long, ',', prev_lat, prev_long)
+
+                distance = get_driving_distance(api_key, str(cur_lat)+","+str(cur_long), str(prev_lat)+","+str(prev_long))
+                if(distance<0): distance=0
+                speed = round(distance/interval*3.6)
+                print(speed)
+                boolean = is_speeding(str(cur_lat), str(cur_long), api_key, speed)
+                return round(speed, 2), boolean
+    return 0.0, boolean
+
+def is_speeding(lat, long, api_key, speed):
+    base_url = "https://routematching.hereapi.com/v8/match/routelinks"
+    params = {
+        "apikey": api_key,
+        "waypoint0": lat+","+long,
+        "mode": "fastest;car",
+        "routeMatch": "1",
+        "attributes": "SPEED_LIMITS_FCn(*)"
+    }
+    response = requests.get(base_url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        speed_limit = int(data['response']['route'][0]['leg'][0]['link'][0]['attributes']['SPEED_LIMITS_FCN'][0]['FROM_REF_SPEED_LIMIT'])
+        if(speed_limit):
+            print(f"Speed limit: {speed_limit} km/h")
+            if(speed-speed_limit>=5): # if going 5 km/h over
+                return True          
+    return False
 
 def get_coordinates():
     try:
         # Updating map
         file_path = "/Users/pearlnatalia/Desktop/car/geolocation/path.txt"
-        INTERVAL = 1
+        INTERVAL = 2
         device = get_device()
         map = folium.Map(
             location=[device.location()['latitude'], 
@@ -149,7 +200,8 @@ def get_coordinates():
                 latitude = location['latitude']
                 longitude = location['longitude']
                 with open(file_path, 'a') as file:
-                    return latitude, longitude #remove, only for test purposes
+                    get_speed(latitude, longitude, file_path, current_time, INTERVAL)
+                    get_red_light_camera(latitude, longitude)
                     file.write(f"{latitude}, {longitude}, Time: {current_time}\n")
                     update_map(map, latitude, longitude)
                     
@@ -164,8 +216,7 @@ def get_coordinates():
         print("Stopping updates.")
 
 def main():
-    lat, long = get_coordinates()
-    get_red_light_camera(lat, long)
+    get_coordinates()
 
 if __name__ == "__main__":
     main()
