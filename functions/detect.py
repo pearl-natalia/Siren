@@ -188,10 +188,10 @@ def main():
 
     # API
     load_dotenv(dotenv_path = "/Users/pearlnatalia/Desktop/car/.env")
-    rf = Roboflow(os.getenv("ROBOFLOW_API_KEY"))
-    traffic_project = rf.workspace().project("traffic-light-detection-h8cvg")
+    API_KEY = Roboflow(os.getenv("ROBOFLOW_API_KEY"))
+    traffic_project = API_KEY.workspace().project("traffic-light-detection-h8cvg")
     traffic_model = traffic_project.version(2).model
-    stop_project = rf.workspace().project("stop-sign-detection-1")
+    stop_project = API_KEY.workspace().project("stop-sign-detection-1")
     stop_model = stop_project.version(1).model
 
     def traffic_callback(image: np.ndarray) -> sv.Detections:
