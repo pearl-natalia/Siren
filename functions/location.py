@@ -1,7 +1,9 @@
-import os, time, folium, csv, requests, timedelta
+import os, time, folium, csv, requests, math
 from dotenv import load_dotenv
 from pyicloud import PyiCloudService
-from datetime import timedelta
+from detect import update_database
+import numpy as np
+import matplotlib.pyplot as plt
 
 def load_api():
     # Load environment variables from .env file
@@ -73,7 +75,6 @@ def get_driving_distance(api_key, red_coordinate, current_coordinate):
     response = requests.get(base_url, params=params)
     if response.status_code == 200:
         data = response.json()
-        print(data)
         return data['routes'][0]['sections'][0]['summary']['length']
     return -1
 
@@ -95,7 +96,7 @@ def format_address(current_street):
     return current_street
 
 
-def get_red_light_camera(lat, long):    
+def get_red_light_camera(lat, long):  
     start, end = get_rows(long)
     if(start==0 and end==0): # not in dataset
         return None
@@ -128,39 +129,46 @@ def get_red_light_camera(lat, long):
                 region = red_region
     if(intersection and distance!=-1):
         print("Red light camera approaching in", distance, "m at", intersection)
-        return intersection + ", " + region
+        return intersection + ", " + region, current_street
     else:
-        print("No red light cameras near", current_street)
+        print("No red light cameras near", current_street), current_street
         return None
 
-def get_speed(cur_lat, cur_long, file_path, cur_time, interval):
+def get_time_difference(prev_time, curr_time):
+    prev_h, prev_m, prev_s = map(int, prev_time)
+    curr_h, curr_m, curr_s = map(int, curr_time)
+    
+    prev_total_seconds = prev_h * 3600 + prev_m * 60 + prev_s
+    curr_total_seconds = curr_h * 3600 + curr_m * 60 + 4
+    
+    return abs(prev_total_seconds - curr_total_seconds)
+
+
+
+def get_speed(cur_lat, cur_long, file_path, curr_time):
     prev_lat, prev_long = 0.0, 0.0
     boolean = False
-    cur_time = cur_time.split(':')
+    curr_time = curr_time.split(':')
     with open(file_path, 'r') as file:
         lines = file.readlines()
         if lines:
             line = lines[-1].strip()
             prev_lat, prev_long = line.strip().split(', ')[0], line.strip().split(', ')[1]
             prev_time = line.split("Time: ")[-1].strip().split(':')
-
-
-            time_difference = timedelta(hours=int(cur_time[0]), minutes=int(cur_time[1]), seconds=int(cur_time[2])) - \
-                timedelta(hours=int(prev_time[0]), minutes=int(prev_time[1]), seconds=int(prev_time[2]))
+            time_difference = get_time_difference(prev_time, curr_time)
             
-            if(abs(time_difference.total_seconds()) <= 60): #prev location = recorded less than a minute ago
+            if(time_difference <= 60): # prev location = recorded less than a minute ago
                 # reverse geocoding api
                 load_dotenv(dotenv_path="/Users/pearlnatalia/Desktop/car/.env")
                 api_key = os.getenv("HERE_API_KEY")
-                print(cur_lat, cur_long, ',', prev_lat, prev_long)
 
                 distance = get_driving_distance(api_key, str(cur_lat)+","+str(cur_long), str(prev_lat)+","+str(prev_long))
                 if(distance<0): distance=0
-                speed = round(distance/interval*3.6)
+                speed = round(distance/time_difference*3.6) # m/s --> km/h
                 print(speed)
-                boolean = is_speeding(str(cur_lat), str(cur_long), api_key, speed)
-                return round(speed, 2), boolean
-    return 0.0, boolean
+                speed_limit, boolean = is_speeding(str(cur_lat), str(cur_long), api_key, speed)
+                return round(speed, 2), speed_limit, boolean 
+    return 0.0, 0.0, boolean
 
 def is_speeding(lat, long, api_key, speed):
     base_url = "https://routematching.hereapi.com/v8/match/routelinks"
@@ -178,14 +186,25 @@ def is_speeding(lat, long, api_key, speed):
         if(speed_limit):
             print(f"Speed limit: {speed_limit} km/h")
             if(speed-speed_limit>=5): # if going 5 km/h over
-                return True          
-    return False
+                return speed_limit, True          
+    return speed_limit, False
 
-def get_coordinates():
+def acute_angle_between_lines(slope1, slope2):
+    if slope1 is None or slope2 is None:
+        return 90.0 
+    
+    # Calculate the angle between two lines defined by their slopes
+    angle_rad = abs(math.atan(abs((slope2 - slope1) / (1 + slope1 * slope2))))
+    # Convert radians to degrees
+    angle_deg = math.degrees(angle_rad)
+    return angle_deg
+        
+def get_coordinates(filename, record_id):
     try:
         # Updating map
         file_path = "/Users/pearlnatalia/Desktop/car/geolocation/path.txt"
-        INTERVAL = 2
+        database_path =  "/Users/pearlnatalia/Desktop/car/data/" + filename + ".db"
+        INTERVAL = 3
         device = get_device()
         map = folium.Map(
             location=[device.location()['latitude'], 
@@ -193,15 +212,62 @@ def get_coordinates():
             zoom_start=12
         )
 
+        prev_street, current_street = "", ""
+        trajectory_lat = []
+        trajectory_long = []
+
         while True:
             location = device.location()
             if location:
+
+                if(current_street):
+                    prev_street = current_street
+
                 current_time = time.strftime('%H:%M:%S', time.localtime(time.time()))
                 latitude = location['latitude']
                 longitude = location['longitude']
+                speed, speed_limit, boolean = get_speed(latitude, longitude, file_path, current_time)
+                red_light_camera, current_street = get_red_light_camera(latitude, longitude)
+
+                if((prev_street and prev_street==current_street) or (prev_street is None)):
+                    trajectory_lat.append(latitude)
+                    trajectory_long.append(longitude)
+                else:
+                    #line of best fit
+                    trajectory_lat = np.array(trajectory_lat)
+                    trajectory_long = np.array(trajectory_long)
+                    slope_best_fit, intercept = np.polyfit(trajectory_long, trajectory_lat, 1)
+                    fit_latitudes = slope_best_fit * trajectory_long + intercept
+                    plt.scatter(trajectory_long, trajectory_lat, color='blue', label='Original data')
+                    plt.plot(trajectory_lat, fit_latitudes, color='red', label='Line of best fit')
+                    plt.show()
+
+
+                    #equation between coor on prev street and coor on current street
+                    if trajectory_long[-1]-longitude != 0:
+                        m = (trajectory_lat[-1]-latitude) / (trajectory_long[-1]-longitude)
+                    else:
+                        m = None #vertical lines
+
+                    
+                    
+                    
+
+
+
+
+                update_database(database_path, "coordinates", latitude+","+longitude, record_id, filename)
+                update_database(database_path, "street", current_street, record_id, filename)
+                update_database(database_path, "speed", speed, record_id, filename)
+                update_database(database_path, "speed_limit", speed_limit, record_id, filename)
+                update_database(database_path, "is_speeding", boolean, record_id, filename)
+                if(red_light_camera is None):
+                    red_light_camera = "None"
+                update_database(database_path, "red_light_camera", red_light_camera, record_id, filename)
+
+                
                 with open(file_path, 'a') as file:
-                    get_speed(latitude, longitude, file_path, current_time, INTERVAL)
-                    get_red_light_camera(latitude, longitude)
+                    
                     file.write(f"{latitude}, {longitude}, Time: {current_time}\n")
                     update_map(map, latitude, longitude)
                     
@@ -216,7 +282,14 @@ def get_coordinates():
         print("Stopping updates.")
 
 def main():
-    get_coordinates()
+    filename = "traffic_video.db"
+    with open('/Users/pearlnatalia/desktop/car/geolocation/path.txt', 'r') as file:
+        lines = file.readlines()
+    record_id = len(lines)
+    get_coordinates(filename, record_id)
+    
 
 if __name__ == "__main__":
+    # test it out between diving among interval or timestamp (whichever is more accurate)
+    # get_speed(43.845020794421096, -79.56710257678063, '/Users/pearlnatalia/desktop/car/geolocation/path.txt', '19:55:00')
     main()

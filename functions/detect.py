@@ -35,7 +35,7 @@ def extract_frames(filename):
         current_time = time.time()
 
         if current_time >= next_frame_time:
-            insert_in_database(database_path, "timestamp", current_time-start_time, filename)
+            insert_in_database(database_path, "video_timestamp", current_time-start_time, filename)
             frame = saturate_image(frame)
             output_path = frame_path + filename + "_frames"
             os.makedirs(output_path, exist_ok=True)
@@ -140,11 +140,31 @@ def create_database(filename):
     cursor.execute(f''' 
         CREATE TABLE IF NOT EXISTS {filename} (
         id INTEGER PRIMARY KEY,
-        timestamp TEXT,
+        
+        video_timestamp TEXT,
         date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         coordinates TEXT,
+        street TEXT,
+       
         stop_signs BOOLEAN DEFAULT 0,
-        traffic_colours TEXT
+        ran_stop_sign BOOLEAN DEFAULT 0,
+        
+        traffic_colours TEXT,
+        red_light_camera TEXT,
+        ran_red_light BOOLEAN DEFAULT 0,
+        
+        speed DEFAULT 0,
+        speed_limit DEFAULT 0,
+        is_speeding BOOLEAN DEFAULT 0
+
+        turn BOOLEAN DEFAULT 0,
+        illegal_turn BOOLEAN DEFAULT 0,
+
+        acceleration DEFAULT 0,
+        crash BOOLEAN DEFAULT 0,
+
+        fines TEXT DEFAULT 'none'
+
         )''')
     conn.commit()
     conn.close()
