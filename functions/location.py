@@ -39,7 +39,8 @@ def get_street_name(api_key, lat, long):
     response = requests.get(url)
     if(response.status_code == 200):
         data = response.json()
-        return data['items'][0]['address']['street']
+        if('street' in data['items'][0]['address']):
+            return data['items'][0]['address']['street']
     return None
 
 
@@ -110,7 +111,7 @@ def get_red_light_camera(lat, long):
         return intersection + ", " + region, current_street
     else:
         print("No red light cameras near", current_street), current_street
-        return None, None
+        return None, current_street
 
 
 def get_time_difference(prev_time, curr_time):
@@ -119,6 +120,7 @@ def get_time_difference(prev_time, curr_time):
     prev_total_seconds = prev_h * 3600 + prev_m * 60 + prev_s
     curr_total_seconds = curr_h * 3600 + curr_m * 60 + curr_s
     return abs(prev_total_seconds - curr_total_seconds)
+
 
 def detect_speeding(lat, long, api_key, speed):
     base_url = "https://routematching.hereapi.com/v8/match/routelinks"
@@ -152,7 +154,7 @@ def get_speed_info(cur_lat, cur_long, file_path, curr_time):
         if lines:
             line = lines[-1].strip()
             prev_lat, prev_long = line.strip().split(', ')[0], line.strip().split(', ')[1]
-            prev_time = line.split("Time: ")[-1].strip().split(':')
+            prev_time = line.split(', ')[2].split('Time: ')[1].split(':')
             time_difference = get_time_difference(prev_time, curr_time)
             
             if(time_difference <= 60): # prev location = recorded less than a minute ago
@@ -231,10 +233,8 @@ def main(filename):
     prev_street, curr_street, turn = "", "", ""
     intersection = False
     prev_lat, prev_long = None, None
-    file = open(file_path, 'w')
-
     
-    #for coordinates
+    # for coordinates
     device = get_device()
     INTERVAL = 3
     map = folium.Map(
@@ -249,10 +249,14 @@ def main(filename):
                 prev_street = curr_street
 
             latitude, longitude, current_time = get_coordinates(file_path, device, map)
+            if(get_street_name(API_KEY, latitude, longitude) is None):
+                continue
+            
             speed, speed_limit, boolean = get_speed_info(latitude, longitude, file_path, current_time)
             red_light_camera, curr_street = get_red_light_camera(latitude, longitude)
         
-            file.write(f"{latitude}, {longitude}, Time: {current_time}, Street: {curr_street}\n")
+            with open(file_path, 'a') as file:
+                file.write(f"{latitude}, {longitude}, Time: {current_time}, Street: {curr_street}\n")
 
             # stop checking for turn after 200m from intersection
             if(intersection and prev_lat, prev_long and get_driving_distance(API_KEY, \
@@ -283,7 +287,6 @@ def main(filename):
             time.sleep(INTERVAL)
 
     except KeyboardInterrupt:
-        file.close()
         print("Stopping updates.")
     
 
