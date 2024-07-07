@@ -1,9 +1,10 @@
-import os, time, folium, csv, requests
+import os, time, folium, csv, requests, numpy as np
 from dotenv import load_dotenv
 from pyicloud import PyiCloudService
-from database import update_database
-from math import atan2, pi
-import numpy as np
+from database import update_database, get_database_value
+from math import pi
+from sklearn.linear_model import LinearRegression
+
 
 
 def load_api():
@@ -170,7 +171,7 @@ def get_speed_info(cur_lat, cur_long, file_path, curr_time):
     return 0.0, 0.0, boolean
 
 
-def get_coordinates(file_path, device, map):
+def get_coordinates(device, map):
     location = device.location()
     if location:
         current_time = time.strftime('%H:%M:%S', time.localtime(time.time()))
@@ -181,48 +182,59 @@ def get_coordinates(file_path, device, map):
     return None, None, current_time
 
 
-def detect_turn_direction(prev_lats, prev_longs, curr_lat, curr_long):
-    slope_best_fit = np.polyfit(prev_longs, prev_lats, 1)[0]
-    dx = curr_long - prev_longs[-1]
-    dy = curr_lat - prev_lats[-1]
-    
-    radians = atan2(slope_best_fit, 1) - atan2(dy, dx)
-    if radians < 0: radians += 2 * pi
-    RANGE = pi/10
-
-    turn = ""
-
-    if(radians>=pi/4-RANGE and radians<= pi/4+RANGE): turn = 'right'
-    elif(radians>=3*pi/4-RANGE and radians<=3*pi/4+RANGE): turn = 'left'
-    else: turn = 'straight'
-    print("Turn: ", turn)
-    return turn
+def turn_angle(v1, v2):
+    angle = np.arctan2(v2[1], v2[0]) - np.arctan2(v1[1], v1[0])
+    angle_deg = np.degrees(angle)
+    if angle_deg < 0: angle_deg += 360
+    return angle_deg
 
 
-def detect_turn(curr_lat, curr_long, file_path, curr_street, api_key):
+def detect_turn_direction(latitudes, longitudes, curr_lat, curr_long):
+    # Linear regression for line of best fit
+    latitudes_reshaped = latitudes.reshape(-1, 1)
+    reg = LinearRegression()
+    reg.fit(latitudes_reshaped, longitudes)
+
+    first_point_in_fit = [latitudes[0], reg.predict(latitudes_reshaped)[0]]
+    last_point_in_fit = [latitudes[-1], reg.predict(latitudes_reshaped)[-1]]
+    direction_segment1 = np.array(last_point_in_fit) - np.array(first_point_in_fit)
+    direction_segment2 = np.array([curr_lat, curr_long]) - np.array(last_point_in_fit)
+
+    angle = turn_angle(direction_segment1, direction_segment2)
+    radians = np.radians(angle) % (2*pi)
+    RANGE = pi/3
+    if (pi/2 - RANGE <= radians <= pi/2 + RANGE): return "right"
+    elif (3*pi/2 - RANGE <= radians <= 3*pi/2 + RANGE): return "left"
+    else: return "straight"
+
+
+def detect_turn(curr_lat, curr_long, file_path, database_path, curr_street, api_key, filename):
     prev_longs = np.array([]) # x-val   
     prev_lats = np.array([]) # y-val
-
     file = open(file_path, 'r')
     paths = file.readlines()
     file.close()
-
     index = -2
+    right_turn_restriction = False
+
     while(abs(index)<=len(paths)):
         path = paths[index]
         prev_lat, prev_long = path.split(', ')[0], path.split(', ')[1]
 
-        if(path.split(', ')[3]!=curr_street or get_driving_distance(api_key, curr_lat, curr_long, prev_lat, prev_long)<70):
+        if(path.split(', ')[3].split('Street: ')[1].replace("\n", "")!=curr_street or get_driving_distance(api_key, str(curr_lat)+','+str(curr_long), str(prev_lat)+','+str(prev_long))>150):
             break # different street or too far away
-
         if(prev_lat!=paths[index+1].split(', ')[0] and prev_long!=paths[index+1].split(', ')[1]):
-            prev_longs = np.append(prev_long)
-            prev_lats = np.append(prev_lat)
+            prev_longs = np.append(np.array([ float(prev_long.strip())]), prev_longs)
+            prev_lats = np.append(np.array([ float(prev_lat.strip())]), prev_lats)
         
+        database_turn_restriction = get_database_value(database_path, filename, index, "turn_restriction")
+        if(right_turn_restriction==False and database_turn_restriction):
+            right_turn_restriction = database_turn_restriction
+         
         index-=1
-
-    return detect_turn_direction(prev_lats, prev_longs, curr_lat, curr_long)
-
+    direction = detect_turn_direction(prev_lats, prev_longs, curr_lat, curr_long)
+    print("Turn:", direction, right_turn_restriction)
+    return direction, right_turn_restriction
 
 
 def main(filename):
@@ -248,7 +260,7 @@ def main(filename):
             if(curr_street):
                 prev_street = curr_street
 
-            latitude, longitude, current_time = get_coordinates(file_path, device, map)
+            latitude, longitude, current_time = get_coordinates(device, map)
             if(get_street_name(API_KEY, latitude, longitude) is None):
                 continue
             
@@ -263,15 +275,15 @@ def main(filename):
                 str(latitude)+","+str(longitude), str(prev_lat)+","+str(prev_long))>200): 
                 intersection = False
 
-
             # detecting intersection
             if(intersection==False and prev_street and prev_street!=curr_street):
                 intersection = True
                 prev_lat, prev_long = latitude, longitude
             
             if(intersection): #detecting turn
-                turn = detect_turn(latitude, longitude, file_path, curr_street, API_KEY)
-
+                turn, restriction = detect_turn(latitude, longitude, file_path, database_path, curr_street, API_KEY)
+                if(restriction!=False and turn == 'right'):
+                    print('Right Turn Violation')
 
             #updating database:
             # update_database(database_path, "coordinates", latitude+","+longitude, record_id, filename)

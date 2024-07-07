@@ -12,7 +12,7 @@ def create_database(filename):
         coordinates TEXT,
         street TEXT,
        
-        stop_signs BOOLEAN DEFAULT 0,
+        stop_sign BOOLEAN DEFAULT 0,
         ran_stop_sign BOOLEAN DEFAULT 0,
         
         traffic_colours TEXT,
@@ -24,7 +24,7 @@ def create_database(filename):
         is_speeding BOOLEAN DEFAULT 0
 
         turn BOOLEAN DEFAULT 0,
-        illegal_turn BOOLEAN DEFAULT 0,
+        turn_restriction BOOLEAN DEFAULT 0,
 
         acceleration DEFAULT 0,
         crash BOOLEAN DEFAULT 0,
@@ -57,3 +57,15 @@ def update_database(path, field, value, record_id, table):
     ''', (value, record_id))
     conn.commit()
     conn.close()
+
+def get_database_value(path, table, index, field):
+    conn = sqlite3.connect(path)
+    cursor = conn.cursor()
+    table_name = table
+    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+    count = cursor.fetchone()[0]
+    id = count + index + 1
+    turn = cursor.execute(f"{field} FROM {table_name} WHERE id={id}")
+    cursor.close()
+    conn.close()
+    return turn

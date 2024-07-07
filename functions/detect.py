@@ -4,6 +4,8 @@ from roboflow import Roboflow
 from supervision import Detections
 from dotenv import load_dotenv
 from database import create_database, insert_in_database, update_database
+from inference_sdk import InferenceHTTPClient
+
 
 
 def saturate_image(frame):
@@ -74,11 +76,11 @@ def filter_detections(detections, frame_path):
     detections.xyxy = filtered_detections
     detections.class_id = filtered_classes
 
-    detections.xyxy, detections.class_id = detect_bike_bus_lights(filtered_detections, filtered_classes) 
+    detections.xyxy, detections.class_id, max_height, min_height = detect_bike_bus_lights(filtered_detections, filtered_classes) 
     if(detections.xyxy):
         detections.xyxy, detections.class_id = order_positions(detections.xyxy, detections.class_id)
     
-    return detections
+    return detections, max_height, min_height
       
 
 def detect_colour(coordinates, frame_path, colour):
@@ -118,12 +120,15 @@ def detect_bike_bus_lights(positions, classes):
         filtered_positions.append(positions[0])
         filtered_classes.append(classes[0])
 
+    max_height = positions[0][1]
     for i in range(1, len(positions)):
         if(positions[i][1]<=positions[i-1][3]):
             filtered_positions.append(positions[i])
             filtered_classes.append(classes[i])
+        if(positions[i][1]<max_height):
+            max_height=positions[i][1]
     
-    return filtered_positions, filtered_classes
+    return filtered_positions, filtered_classes, max_height, positions[-1][1]
 
 
 # sort lights from left to right
@@ -133,6 +138,15 @@ def order_positions(filtered_positions, filtered_classes):
     filtered_positions, filtered_classes = zip(*combined)
     filtered_positions, filtered_classes = list(filtered_positions), list(filtered_classes)
     return filtered_positions, filtered_classes
+
+def detect_no_right_turn_sign(API_KEY, frame):
+    CLIENT = InferenceHTTPClient(
+    api_url="https://detect.roboflow.com",
+    api_key=API_KEY
+    )
+    CLIENT.infer(frame, model_id="right-turn-sign-detection/1")
+
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -154,6 +168,8 @@ def main():
     traffic_model = traffic_project.version(2).model
     stop_project = API_KEY.workspace().project("stop-sign-detection-1")
     stop_model = stop_project.version(1).model
+    turn_project = API_KEY.workspace().project("right-turn-sign-detection")
+    turn_model = turn_project.version(1).model
 
     def traffic_callback(image: np.ndarray) -> sv.Detections:
         with tempfile.NamedTemporaryFile(suffix=".JPEG") as f:
@@ -161,7 +177,8 @@ def main():
             result = traffic_model.predict(f.name, confidence=15, overlap=1).json()
         detections = Detections.from_inference(result)
         return detections
-    
+            
+
     # analyzing frames
     for frame in os.listdir(frame_path):
         if(frame==".DS_Store"): continue
@@ -183,7 +200,7 @@ def main():
         # traffic light present
         else:
             slicer = sv.InferenceSlicer(callback=traffic_callback)
-            detections = filter_detections(slicer(image=image), frame_path+frame)
+            detections, max_height, min_height = filter_detections(slicer(image=image), frame_path+frame)
             classes = ["green", "off", "red", "yellow"]
             prediction_num = len(detections.xyxy)
             box_annotator = sv.BoxAnnotator()
@@ -195,9 +212,32 @@ def main():
             for d in detections.class_id:
                 lights = lights + str(d) + " "
             lights = lights.strip()
+
+            # no right turn
+            result = turn_model.predict(frame_path, confidence=30, overlap=2).json()
+            labels = [item["class"] for item in result["predictions"]]
+            detections = sv.Detections.from_roboflow(result)
+            label_annotator = sv.LabelAnnotator()
+            box_annotator = sv.BoxAnnotator()
+            annotated_frame = box_annotator.annotate(
+                scene=image, detections=detections)
+            annotated_frame = label_annotator.annotate(
+                scene=annotated_frame, detections=detections, labels=labels)
+            if(detections['xyxy'] is not None): stop_sign = 1
+            print(detections)
+
+            right_turn_restriction = False
+
+            for detection in detections.xyxy:
+                if(detection[1]>=max_height and detection[3]<=min_height):
+                    right_turn_restriction = True
+                    print(detection)
+                    break
+
+            update_database(database_path, "turn_restriction", right_turn_restriction, frame.rsplit('.', 1)[0], filename)
             update_database(database_path, "traffic_colours", lights, frame.rsplit('.', 1)[0], filename)
         
-        update_database(database_path, "stop_signs", stop_sign, frame.rsplit('.', 1)[0], filename) 
+        update_database(database_path, "stop_sign", stop_sign, frame.rsplit('.', 1)[0], filename) 
         cv2.imwrite(output_path, annotated_frame)
 
 
