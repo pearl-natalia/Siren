@@ -1,10 +1,9 @@
 import os, time, folium, csv, requests, numpy as np
 from dotenv import load_dotenv
 from pyicloud import PyiCloudService
-from database import update_database, get_database_value
+from database import update_database, get_database_value, get_database_length
 from math import pi
 from sklearn.linear_model import LinearRegression
-
 
 
 def load_api():
@@ -254,7 +253,11 @@ def main(filename):
         device.location()['longitude']], 
         zoom_start=12
     )
+    stop_sign = False
+    stop_sign_lat, stop_sign_long = 0.0, 0.0
+    stop_sign_id = -1
 
+    
     try:
         while True:
             if(curr_street):
@@ -280,10 +283,40 @@ def main(filename):
                 intersection = True
                 prev_lat, prev_long = latitude, longitude
             
-            if(intersection): #detecting turn
+            if(intersection): # detecting turn
                 turn, restriction = detect_turn(latitude, longitude, file_path, database_path, curr_street, API_KEY)
                 if(restriction!=False and turn == 'right'):
                     print('Right Turn Violation')
+
+            # detecting rolling stop  
+            if(stop_sign==False):
+                if(get_database_value(database_path, filename, -1, "stop_sign") and stop_sign_lat==0.0 and stop_sign_long==0.0): # new stop sign detected
+                   stop_sign = True
+                   stop_sign_lat, stop_sign_long = latitude, longitude
+                   stop_sign_id = get_database_length(database_path, filename)
+                                                                            
+            elif(stop_sign==True):
+                if(get_driving_distance(API_KEY, str(stop_sign_lat)+','+str(stop_sign_long), str(latitude)+','+str(longitude))<=100):
+                    # check for stop
+                    line = ''
+                    with open(file_path, 'r') as file:
+                        line = file.readlines()[-2]
+                    if(line.split(', ')[0]==latitude and line.split(', ')[1]==longitude):
+                        stop_sign = False
+                        stop_sign_id = -1
+                else: # didn't stop within 100m after initial detection
+                    update_database(database_path, "ran_stop_sign", True, stop_sign_id, filename)
+                    stop_sign = False
+                    stop_sign_lat, stop_sign_long = 0.0, 0.0
+                    stop_sign_id = -1
+            
+            if(stop_sign_lat!=0.0 and stop_sign_long!=0 and get_driving_distance(API_KEY, str(stop_sign_lat)+','+str(stop_sign_long), str(latitude)+','+str(longitude))>100):
+                stop_sign_lat, stop_sign_long = 0.0, 0.0
+
+
+
+
+
 
             #updating database:
             # update_database(database_path, "coordinates", latitude+","+longitude, record_id, filename)
@@ -303,5 +336,5 @@ def main(filename):
     
 
 if __name__ == "__main__":
-    filename = "traffic_video.db"
+    filename = "traffic_video"
     main(filename)

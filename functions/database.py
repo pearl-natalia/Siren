@@ -65,7 +65,16 @@ def get_database_value(path, table, index, field):
     cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
     count = cursor.fetchone()[0]
     id = count + index + 1
-    turn = cursor.execute(f"{field} FROM {table_name} WHERE id={id}")
+    value = cursor.execute(f"{field} FROM {table_name} WHERE id={id}")
     cursor.close()
     conn.close()
-    return turn
+    return value
+
+def get_database_length(path, table):
+    conn = sqlite3.connect(path)
+    cursor = conn.cursor()
+    table_name = table
+    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+    count = cursor.fetchone()[0]
+    return count
+

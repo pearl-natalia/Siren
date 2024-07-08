@@ -1,8 +1,8 @@
 import sqlite3
-conn = sqlite3.connect('video_data.db')
+conn = sqlite3.connect('../data/traffic_video.db')
 cursor = conn.cursor()
 cursor.execute('''
-    SELECT * FROM video_data
+    SELECT * FROM traffic_video
 ''')
 rows = cursor.fetchall()
 for row in rows:
