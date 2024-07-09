@@ -77,9 +77,6 @@ def format_address(current_street):
 
 
 def get_red_light_camera(lat, long):  
-    if(long<-81 or long>-74): # not in dataset
-        return None
-    
     red_intersection, red_region = "", ""
     red_lat, red_long = 0.0, 0.0
     distance = -1
@@ -106,7 +103,7 @@ def get_red_light_camera(lat, long):
                 intersection = red_intersection
                 region = red_region
 
-    if(intersection and distance!=-1):
+    if(intersection and -1<distance<=300): #300m range
         print("Red light camera approaching in", distance, "m at", intersection)
         return intersection + ", " + region, current_street
     else:
@@ -140,7 +137,7 @@ def detect_speeding(lat, long, api_key, speed):
             
         if(speed_limit):
             print(f"Speed limit: {speed_limit} km/h")
-            if(speed-speed_limit>=5): # if going 5 km/h over
+            if(speed-speed_limit>=10): # if going 5 km/h over
                 return speed_limit, True          
     return speed_limit, False
     

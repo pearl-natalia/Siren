@@ -8,18 +8,26 @@ m = folium.Map(
     zoom_start=12
 )
 
-with open('geolocation/path.txt', 'r') as file:
+long_prev = ""
+lat_prev = ""
+
+with open('path.txt', 'r') as file:
     for line in file:
-        # Split the line by ', ' to separate latitude, longitude, and timestamp
+        # Split the line by ', ' to separate latitude, longitude, and timestamp        
         parts = line.strip().split(', ')
         if len(parts) >= 2:
             lat = float(parts[0])
             long = float(parts[1])
+            if(long_prev and lat_prev and long_prev==long and lat_prev==lat):
+                continue
+
             coordinates.append({'lat': lat, 'long': long})
+            long_prev = long
+            lat_prev = lat
 
 # Add points to the map
 for coord in coordinates:
     folium.Marker([coord['lat'], coord['long']]).add_to(m)
 
 # Save the map to an HTML file
-m.save('geolocation/map.html')
+m.save('map.html')
