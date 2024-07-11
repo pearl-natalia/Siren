@@ -7,7 +7,6 @@ from database import create_database, insert_in_database, update_database
 from inference_sdk import InferenceHTTPClient
 
 
-
 def saturate_image(frame):
     hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv_image)
@@ -19,13 +18,13 @@ def saturate_image(frame):
 
 
 def extract_frames(filename):
-    video_path = "/Users/pearlnatalia/Desktop/car/footage/"
-    frame_path = "/Users/pearlnatalia/Desktop/car/output_frames/"
-    database_path = "/Users/pearlnatalia/Desktop/car/data/" + filename + ".db"
+    video_path = "../footage/"+filename+".mp4"
+    frame_path = "../output_frames/"
+    database_path = "../data/"+filename+".db"
 
     INTERVAL = 0.3 # in seconds
-
-    cap = cv2.VideoCapture(video_path + filename + ".mp4")
+    
+    cap = cv2.VideoCapture(video_path)
     frame_num = 1
     start_time = time.time()
     next_frame_time = start_time + INTERVAL  
@@ -36,6 +35,7 @@ def extract_frames(filename):
             break
 
         current_time = time.time()
+        print(current_time, next_frame_time)
 
         if current_time >= next_frame_time:
             insert_in_database(database_path, "video_timestamp", current_time-start_time, filename)

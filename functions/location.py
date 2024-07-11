@@ -5,6 +5,7 @@ from database import update_database, get_database_value, get_database_length
 from math import pi
 from sklearn.linear_model import LinearRegression
 
+INTERVAL = 3
 
 def load_api():
     load_dotenv(dotenv_path="/Users/pearlnatalia/Desktop/car/.env")
@@ -244,7 +245,6 @@ def main(filename):
     
     # for coordinates
     device = get_device()
-    INTERVAL = 3
     map = folium.Map(
         location=[device.location()['latitude'], 
         device.location()['longitude']], 

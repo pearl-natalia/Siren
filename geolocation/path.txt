@@ -22,3 +22,4 @@
 43.64672093652871, -79.40253482420988, Time: 15:42:43, Street: Richmond Street West
 43.64672093652871, -79.40253482420988, Time: 15:44:22, Street: Richmond Street West
 43.64672093652871, -79.40253482420988, Time: 15:46:10, Street: Richmond Street West
+43.64672121766834, -79.40253566275092, Time: 15:58:53, Street: Richmond Street West

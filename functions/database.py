@@ -1,10 +1,10 @@
 import sqlite3
 
-def create_database(filename):
-    conn = sqlite3.connect("/Users/pearlnatalia/Desktop/car/data/" + filename + ".db")
+def create_database(tablename):
+    conn = sqlite3.connect("../data/" + tablename + ".db")
     cursor = conn.cursor()
     cursor.execute(f''' 
-        CREATE TABLE IF NOT EXISTS {filename} (
+        CREATE TABLE IF NOT EXISTS "{tablename}" (
         id INTEGER PRIMARY KEY,
         
         video_timestamp TEXT,
@@ -21,7 +21,7 @@ def create_database(filename):
         
         speed DEFAULT 0,
         speed_limit DEFAULT 0,
-        is_speeding BOOLEAN DEFAULT 0
+        is_speeding BOOLEAN DEFAULT 0,
 
         turn BOOLEAN DEFAULT 0,
         turn_restriction BOOLEAN DEFAULT 0,
@@ -40,7 +40,7 @@ def insert_in_database(path, field, value, table):
     conn = sqlite3.connect(path)
     cursor = conn.cursor()
     cursor.execute(f'''
-        INSERT INTO {table} ({field})
+        INSERT INTO "{table}" ({field})
         VALUES (?)
     ''', (value,))
     conn.commit()
@@ -51,7 +51,7 @@ def update_database(path, field, value, record_id, table):
     conn = sqlite3.connect(path)
     cursor = conn.cursor()
     cursor.execute(f'''
-        UPDATE {table} 
+        UPDATE "{table}"
         SET {field} = ?
         WHERE id = ?
     ''', (value, record_id))
@@ -62,10 +62,10 @@ def get_database_value(path, table, index, field):
     conn = sqlite3.connect(path)
     cursor = conn.cursor()
     table_name = table
-    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+    cursor.execute(f'''SELECT COUNT(*) FROM "{table_name}" ''')
     count = cursor.fetchone()[0]
     id = count + index + 1
-    value = cursor.execute(f"{field} FROM {table_name} WHERE id={id}")
+    value = cursor.execute(f'''{field} FROM "{table_name}" WHERE id={id}''')
     cursor.close()
     conn.close()
     return value
@@ -74,7 +74,7 @@ def get_database_length(path, table):
     conn = sqlite3.connect(path)
     cursor = conn.cursor()
     table_name = table
-    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+    cursor.execute(f'''SELECT COUNT(*) FROM "{table_name}" ''')
     count = cursor.fetchone()[0]
     return count
 
