@@ -3,6 +3,4 @@ myenv/
 .DS_Store
 geolocation/maps.html
 geolocation/insert_paths.py
-functions/test.py
-functions/test.txt
 functions/__pycache__
