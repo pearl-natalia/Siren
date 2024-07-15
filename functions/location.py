@@ -1,10 +1,10 @@
-import os, time, folium, csv, requests, numpy as np
+import os, folium, csv, requests, numpy as np
 from dotenv import load_dotenv
 from pyicloud import PyiCloudService
-from database import update_database, get_database_value, get_database_length
+from database import get_database_value
 from math import pi
 from sklearn.linear_model import LinearRegression
-
+from datetime import datetime
 INTERVAL = 3
 
 def load_api():
@@ -113,11 +113,10 @@ def get_red_light_camera(lat, long):
 
 
 def get_time_difference(prev_time, curr_time):
-    prev_h, prev_m, prev_s = map(int, prev_time)
-    curr_h, curr_m, curr_s = map(int, curr_time)
-    prev_total_seconds = prev_h * 3600 + prev_m * 60 + prev_s
-    curr_total_seconds = curr_h * 3600 + curr_m * 60 + curr_s
-    return abs(prev_total_seconds - curr_total_seconds)
+    prev_time_obj = datetime.strptime(prev_time, '%m_%d_%Y_%H_%M_%S')
+    curr_time_obj = datetime.strptime(curr_time, '%m_%d_%Y_%H_%M_%S')
+    time_difference = abs((curr_time_obj - prev_time_obj).total_seconds())
+    return time_difference
 
 
 def detect_speeding(lat, long, api_key, speed):
@@ -143,19 +142,19 @@ def detect_speeding(lat, long, api_key, speed):
     return speed_limit, False
     
 
-def get_speed_info(cur_lat, cur_long, file_path, curr_time):
+def get_speed_info(cur_lat, cur_long, paths_path, curr_time):
     prev_lat, prev_long = 0.0, 0.0
     boolean = False
-    curr_time = curr_time.split(':')
-    with open(file_path, 'r') as file:
+    with open(paths_path, 'r') as file:
         lines = file.readlines()
         if lines:
             line = lines[-1].strip()
             prev_lat, prev_long = line.strip().split(', ')[0], line.strip().split(', ')[1]
-            prev_time = line.split(', ')[2].split('Time: ')[1].split(':')
+            prev_time = line.split(', ')[2].split('Time: ')[1].strip()
+            print(curr_time, 'and', prev_time)
             time_difference = get_time_difference(prev_time, curr_time)
             
-            if(time_difference <= 60): # prev location = recorded less than a minute ago
+            if(0<time_difference <= 60): # prev location = recorded less than a minute ago
                 # reverse geocoding api
                 load_dotenv(dotenv_path="/Users/pearlnatalia/Desktop/car/.env")
                 api_key = os.getenv("HERE_API_KEY")
@@ -171,12 +170,10 @@ def get_speed_info(cur_lat, cur_long, file_path, curr_time):
 def get_coordinates(device, map):
     location = device.location()
     if location:
-        current_time = time.strftime('%H:%M:%S', time.localtime(time.time()))
         latitude, longitude = location['latitude'], location['longitude']
-        print('Coordinates: ' + str(latitude) + ', ' + str(longitude)) #TEST
         update_map(map, latitude, longitude)
-        return latitude, longitude, current_time
-    return None, None, current_time
+        return latitude, longitude
+    return None, None
 
 
 def turn_angle(v1, v2):
@@ -205,7 +202,7 @@ def detect_turn_direction(latitudes, longitudes, curr_lat, curr_long):
     else: return "straight"
 
 
-def detect_turn(curr_lat, curr_long, file_path, database_path, curr_street, api_key, filename):
+def detect_turn(curr_lat, curr_long, file_path, curr_street, api_key, filename):
     prev_longs = np.array([]) # x-val   
     prev_lats = np.array([]) # y-val
     file = open(file_path, 'r')
@@ -224,7 +221,7 @@ def detect_turn(curr_lat, curr_long, file_path, database_path, curr_street, api_
             prev_longs = np.append(np.array([ float(prev_long.strip())]), prev_longs)
             prev_lats = np.append(np.array([ float(prev_lat.strip())]), prev_lats)
         
-        database_turn_restriction = get_database_value(database_path, filename, index, "turn_restriction")
+        database_turn_restriction = get_database_value(filename, index, "turn_restriction")
         if(right_turn_restriction==False and database_turn_restriction):
             right_turn_restriction = database_turn_restriction
          
@@ -234,104 +231,108 @@ def detect_turn(curr_lat, curr_long, file_path, database_path, curr_street, api_
     return direction, right_turn_restriction
 
 
-def main(filename):
-    load_dotenv(dotenv_path="/Users/pearlnatalia/Desktop/car/.env")
-    API_KEY = os.getenv("HERE_API_KEY")
-    file_path = "/Users/pearlnatalia/Desktop/car/geolocation/path.txt"
-    database_path =  "/Users/pearlnatalia/Desktop/car/data/" + filename + ".db"
-    prev_street, curr_street, turn = "", "", ""
-    intersection = False
-    prev_lat, prev_long = None, None
+# def location(tablename, real_time):
+#     load_dotenv(dotenv_path="../.env")
+#     API_KEY = os.getenv("HERE_API_KEY")
+#     paths_path = "../paths/" + tablename + ".txt"
+#     database_path =  "../data/" + tablename + ".db"
+#     prev_street, curr_street, turn = "", "", ""
+#     intersection = False
+#     prev_lat, prev_long = None, None
+#     first_coordinate = True
+
+#     os.makedirs('../paths/', exist_ok=True)
     
-    # for coordinates
-    device = get_device()
-    map = folium.Map(
-        location=[device.location()['latitude'], 
-        device.location()['longitude']], 
-        zoom_start=12
-    )
-    stop_sign = False
-    stop_sign_lat, stop_sign_long = 0.0, 0.0
-    stop_sign_id = -1
+#     # for coordinates
+#     device = get_device()
+#     map = folium.Map(
+#         location=[device.location()['latitude'], 
+#         device.location()['longitude']], 
+#         zoom_start=12
+#     )
+#     stop_sign = False
+#     stop_sign_lat, stop_sign_long = 0.0, 0.0
+#     stop_sign_id = -1
+#     id = -1
+#     speed, speed_limit, boolean = None, None, None
 
     
-    try:
-        while True:
-            if(curr_street):
-                prev_street = curr_street
+#     try:
+#         while True:
+#             if(curr_street):
+#                 prev_street = curr_street
 
-            latitude, longitude, current_time = get_coordinates(device, map)
-            if(get_street_name(API_KEY, latitude, longitude) is None):
-                continue
+#             latitude, longitude = get_coordinates(device, map)
+#             print(latitude, longitude)
+#             if(get_street_name(API_KEY, latitude, longitude) is None):
+#                 continue
             
-            speed, speed_limit, boolean = get_speed_info(latitude, longitude, file_path, current_time)
-            red_light_camera, curr_street = get_red_light_camera(latitude, longitude)
+#             if(os.path.isfile(paths_path)):
+#                 speed, speed_limit, boolean = get_speed_info(latitude, longitude, paths_path, real_time)
+#                 first_coordinate = False
+
+#             red_light_camera, curr_street = get_red_light_camera(latitude, longitude)
         
-            with open(file_path, 'a') as file:
-                file.write(f"{latitude}, {longitude}, Time: {current_time}, Street: {curr_street}\n")
+#             with open(paths_path, 'a') as file:
+#                 file.write(f"{latitude}, {longitude}, Time: {real_time}, Street: {curr_street}\n")
+#             with open(paths_path, 'r') as file:
+#                 lines = file.readlines()
+#                 id = len([line for line in lines if line.strip() != ''])
 
-            # stop checking for turn after 200m from intersection
-            if(intersection and prev_lat, prev_long and get_driving_distance(API_KEY, \
-                str(latitude)+","+str(longitude), str(prev_lat)+","+str(prev_long))>200): 
-                intersection = False
+#             # stop checking for turn after 200m from intersection
+#             if(intersection and prev_lat, prev_long and get_driving_distance(API_KEY, \
+#                 str(latitude)+","+str(longitude), str(prev_lat)+","+str(prev_long))>200): 
+#                 intersection = False
 
-            # detecting intersection
-            if(intersection==False and prev_street and prev_street!=curr_street):
-                intersection = True
-                prev_lat, prev_long = latitude, longitude
+#             # detecting intersection
+#             if(intersection==False and prev_street and prev_street!=curr_street):
+#                 intersection = True
+#                 prev_lat, prev_long = latitude, longitude
             
-            if(intersection): # detecting turn
-                turn, restriction = detect_turn(latitude, longitude, file_path, database_path, curr_street, API_KEY)
-                if(restriction!=False and turn == 'right'):
-                    print('Right Turn Violation')
+#             if(intersection): # detecting turn
+#                 turn, restriction = detect_turn(latitude, longitude, paths_path, curr_street, API_KEY)
+#                 if(restriction!=False and turn == 'right'):
+#                     print('Right Turn Violation')
 
-            # detecting rolling stop  
-            if(stop_sign==False):
-                if(get_database_value(database_path, filename, -1, "stop_sign") and stop_sign_lat==0.0 and stop_sign_long==0.0): # new stop sign detected
-                   stop_sign = True
-                   stop_sign_lat, stop_sign_long = latitude, longitude
-                   stop_sign_id = get_database_length(database_path, filename)
+#             # detecting rolling stop  
+#             if(stop_sign==False):
+#                 if(get_database_value(tablename, -1, "stop_sign") and stop_sign_lat==0.0 and stop_sign_long==0.0): # new stop sign detected
+#                    stop_sign = True
+#                    stop_sign_lat, stop_sign_long = latitude, longitude
+#                    stop_sign_id = get_database_length(tablename)
                                                                             
-            elif(stop_sign==True):
-                if(get_driving_distance(API_KEY, str(stop_sign_lat)+','+str(stop_sign_long), str(latitude)+','+str(longitude))<=100):
-                    # check for stop
-                    line = ''
-                    with open(file_path, 'r') as file:
-                        line = file.readlines()[-2]
-                    if(line.split(', ')[0]==latitude and line.split(', ')[1]==longitude):
-                        stop_sign = False
-                        stop_sign_id = -1
-                else: # didn't stop within 100m after initial detection
-                    update_database(database_path, "ran_stop_sign", True, stop_sign_id, filename)
-                    stop_sign = False
-                    stop_sign_lat, stop_sign_long = 0.0, 0.0
-                    stop_sign_id = -1
+#             elif(stop_sign==True):
+#                 if(get_driving_distance(API_KEY, str(stop_sign_lat)+','+str(stop_sign_long), str(latitude)+','+str(longitude))<=100):
+#                     # check for stop
+#                     line = ''
+#                     with open(paths_path, 'r') as file:
+#                         line = file.readlines()[-2]
+#                     if(line.split(', ')[0]==latitude and line.split(', ')[1]==longitude):
+#                         stop_sign = False
+#                         stop_sign_id = -1
+#                 else: # didn't stop within 100m after initial detection
+#                     update_row("ran_stop_sign", True, stop_sign_id, tablename)
+#                     stop_sign = False
+#                     stop_sign_lat, stop_sign_long = 0.0, 0.0
+#                     stop_sign_id = -1
             
-            if(stop_sign_lat!=0.0 and stop_sign_long!=0 and get_driving_distance(API_KEY, str(stop_sign_lat)+','+str(stop_sign_long), str(latitude)+','+str(longitude))>100):
-                stop_sign_lat, stop_sign_long = 0.0, 0.0
+#             if(stop_sign_lat!=0.0 and stop_sign_long!=0 and get_driving_distance(API_KEY, str(stop_sign_lat)+','+str(stop_sign_long), str(latitude)+','+str(longitude))>100):
+#                 stop_sign_lat, stop_sign_long = 0.0, 0.0
 
+#             #updating database:
+#             update_row("coordinates", str(latitude)+","+str(longitude), id, tablename)
+#             update_row("street", curr_street, id, tablename)
+#             if(first_coordinate==False):
+#                 update_row("speed", speed, id, tablename)
+#                 update_row("speed_limit", speed_limit, id, tablename)
+#                 update_row("is_speeding", boolean, id, tablename)
+#             if(red_light_camera is None):
+#                 red_light_camera = "None"
+#             update_row("red_light_camera", red_light_camera, id, tablename)
 
+#             time.sleep(INTERVAL)
 
+#     except KeyboardInterrupt:
+#         print("Stopping updates.")
 
-
-
-            #updating database:
-            # update_database(database_path, "coordinates", latitude+","+longitude, record_id, filename)
-            # update_database(database_path, "street", curr_street, record_id, filename)
-            # update_database(database_path, "speed", speed, record_id, filename)
-            # update_database(database_path, "speed_limit", speed_limit, record_id, filename)
-            # update_database(database_path, "is_speeding", boolean, record_id, filename)
-            # if(red_light_camera is None):
-            #     red_light_camera = "None"
-            # update_database(database_path, "red_light_camera", red_light_camera, record_id, filename)
-
-            print('\n')
-            time.sleep(INTERVAL)
-
-    except KeyboardInterrupt:
-        print("Stopping updates.")
     
-
-if __name__ == "__main__":
-    filename = "traffic_video"
-    main(filename)

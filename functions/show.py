@@ -1,8 +1,14 @@
-import sqlite3
-conn = sqlite3.connect('../data/07_10_2024_20_52_20.db')
+import sqlite3, argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("database_name", type=str)
+args = parser.parse_args()
+filename = args.database_name
+
+conn = sqlite3.connect('../data/'+filename+'.db')
 cursor = conn.cursor()
-cursor.execute('''
-    SELECT * FROM '07_10_2024_20_52_20'
+cursor.execute(f'''
+    SELECT * FROM "{filename}"
 ''')
 rows = cursor.fetchall()
 for row in rows:

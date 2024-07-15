@@ -1,17 +1,18 @@
 import sqlite3
 
 def create_database(tablename):
-    conn = sqlite3.connect("../data/" + tablename + ".db")
+    #creating a database
+    conn = sqlite3.connect('../data/'+tablename+'.db')
     cursor = conn.cursor()
     cursor.execute(f''' 
         CREATE TABLE IF NOT EXISTS "{tablename}" (
         id INTEGER PRIMARY KEY,
+        real_time TEXT,
         
         video_timestamp TEXT,
-        date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         coordinates TEXT,
         street TEXT,
-       
+        
         stop_sign BOOLEAN DEFAULT 0,
         ran_stop_sign BOOLEAN DEFAULT 0,
         
@@ -33,48 +34,48 @@ def create_database(tablename):
 
         )''')
     conn.commit()
-    conn.close()
 
 
-def insert_in_database(path, field, value, table):
-    conn = sqlite3.connect(path)
+def create_new_row(tablename, field, value):
+    conn = sqlite3.connect('../data/'+tablename+'.db')
     cursor = conn.cursor()
     cursor.execute(f'''
-        INSERT INTO "{table}" ({field})
+        INSERT INTO "{tablename}" ({field})
         VALUES (?)
     ''', (value,))
     conn.commit()
     conn.close()
 
 
-def update_database(path, field, value, record_id, table):
-    conn = sqlite3.connect(path)
+def update_row_database(field, value, record_id, tablename):
+    conn = sqlite3.connect('../data/'+tablename+'.db')
     cursor = conn.cursor()
     cursor.execute(f'''
-        UPDATE "{table}"
+        UPDATE "{tablename}"
         SET {field} = ?
         WHERE id = ?
     ''', (value, record_id))
     conn.commit()
     conn.close()
 
-def get_database_value(path, table, index, field):
-    conn = sqlite3.connect(path)
+def get_database_value(tablename, index, field):
+    conn = sqlite3.connect('../data/'+tablename+'.db')
     cursor = conn.cursor()
-    table_name = table
-    cursor.execute(f'''SELECT COUNT(*) FROM "{table_name}" ''')
+    cursor.execute(f'''SELECT COUNT(*) FROM "{tablename}" ''')
     count = cursor.fetchone()[0]
     id = count + index + 1
-    value = cursor.execute(f'''{field} FROM "{table_name}" WHERE id={id}''')
+    cursor.execute(f'''SELECT {field} FROM "{tablename}" WHERE id={id}''')
+    value = cursor.fetchone()
     cursor.close()
     conn.close()
     return value
 
-def get_database_length(path, table):
-    conn = sqlite3.connect(path)
+def get_database_length(tablename):
+    conn = sqlite3.connect('../data/'+tablename+'.db')
     cursor = conn.cursor()
-    table_name = table
-    cursor.execute(f'''SELECT COUNT(*) FROM "{table_name}" ''')
+    cursor.execute(f'''SELECT COUNT(*) FROM "{tablename}" ''')
     count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
     return count
 
