@@ -37,13 +37,20 @@ If a stop sign is identified, the vehicle's movement is tracked for up to 200 me
 Dividing the distance traveled by several intervals (approximately every 12 seconds) provides an average speed estimate. The HERE Maps API is used to retrieve speed limits specific to the current location. This allows for real-time detection of speeding, triggering warnings when exceeding limits by 10 km/h and sending a special alert if exceeding by 40 km/h (potentially leading to vehicle impoundment). In 40 km/h zones, the system displays a speeding warning emphasizing the likelihood of being in a school or community zone, where fines and demerit points are typically higher.<br><br>
 
 **Nearby Red Light Cameras**<br>
-The geographic locations of all red light camera intersections in major regions such as York, Toronto, Peel, Halton, Ottawa, Hamilton, and Guelph are publicly accessible on city and regional websites across southern Ontario. Through reverse geocoding, the system determines the specific street a vehicle is on based on its coordinates. Integrated with driver routing data, it identifies if a vehicle is approaching any road connected to a red light camera intersection within 300m of a driving route.<br>
+The geographic locations of all red light camera intersections in major regions such as York, Toronto, Peel, Halton, Ottawa, Hamilton, and Guelph are publicly accessible on city and regional websites across southern Ontario. After manually searching these websites, I created a <a href="https://github.com/pearl-natalia/Siren/blob/master/geolocation/red-light-cameras.csv">CSV file</a> to catalog all the locations of red light cameras in these cities. Through reverse geocoding, the system determines the specific street a vehicle is on based on its coordinates. Integrated with driver routing data, it identifies if a vehicle is approaching any road connected to a red light camera intersection within 300m of a driving route.
+
+<p align="center">
+<img width="65%" alt="Screenshot 2024-07-28 at 3 49 37 PM" src="https://github.com/user-attachments/assets/736263be-5ca4-4ed7-9077-0a43444c2836">
+</p>
+
 These warnings aim to prevent a $325 fine for running a red light caught by the camera and discourage speeding through yellow lights.
 When the distance to the intersection begins to increase over two frames, indicating that the vehicle is moving away, the warning is removed. The use of a driver routing API ensures accurate calculations of driving distances between coordinates A and B, which is essential as geographical distance may not accurately reflect the distance driven.
 
 <p align="center">
 <img width="678" alt="Screenshot 2024-07-08 at 10 32 04 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/cb880468-d3c4-4f8e-9d3c-7f8caa7c6e89">
 </p>
+
+<br>
 
 **Turn Detections**<br>
 Using reverse geocoding, the system monitors the driver's current street, comparing it with the previous frame to detect any street name changes indicating a potential turn. A linear regression model calculates the average initial heading before the turn, followed by creating a direction vector from the last coordinate on the previous road to the current one. By measuring the clockwise angle of this vector relative to the line of best fit, the system identifies whether a left turn (π/6 - 5π/6), a right turn (7π/6 - 11π/6), or a straight path has been taken.
@@ -57,3 +64,10 @@ Continuing angle checking up to 100 meters from the initial street change ensure
 
 **Traffic signal**<br>
 The leftmost traffic light always indicates left turns, whether it's a designated left-turn light or a standard one. The rightmost light corresponds to right turns and straight paths. When a turn is detected and the last frame with a traffic light shows it as red, the system checks for a complete stop made before the turn (consistency of coordinates over two frames on the previous street). For left turns, it verifies that the leftmost traffic light was not red before the turn. Additionally, if the speed exceeds 5 km/h and the last frame showed a red light, the system flags that timestamp as a potential instance of running a red light.
+
+### Behind the Scenes
+
+To test the application, I drove around with the IDE running to determine Siren's accuracy with turns, speed, etc!
+<p align="center">
+<img width="50%" alt="Screenshot 2024-07-28 at 3 37 47 PM" src="https://github.com/user-attachments/assets/4408e7f9-34d4-4dd5-9fc8-4606e51693ca">
+</p>
