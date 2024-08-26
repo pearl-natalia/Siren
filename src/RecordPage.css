@@ -1,0 +1,93 @@
+#recordPage {
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  overflow-y: hidden;
+}
+#dashcamFootageContainer {
+  width: calc(100% - 20px);
+  margin-top: 0;
+  height: 30vw;
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  position: relative;
+  z-index: 10; /* Ensure this is above the map */
+}
+
+#dashcamFootage {
+  width: 50%;
+  background: url("./dashcam.png");
+  background-size: cover;
+}
+
+#dashcamInfo {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+#speedLimitBorder, #speedLimit {
+  border-radius: 10px;
+  background-color: white;
+  border-color: black;
+  border-style: solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 20; /* Ensure this is above the map */
+}
+
+#speedLimitBorder {
+  width: 80px;
+  height: 100px;
+  border-width: 1px;
+}
+
+#speedLimit {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  border-width: 3px;
+}
+
+#recordBtn {
+  font-size: 18px;
+  padding: 10px 10px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.471);
+  color: #61dafb;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 60px;
+  height: 60px;
+  position: relative; 
+  bottom: 10px;
+  right: 10px;
+  z-index: 300;
+}
+
+#recordBtn:hover {
+  background-color: #4fa3c2;
+}
+
+#mapboxContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: calc(100% - 150px); /* Adjust if necessary to cover the full height */
+  z-index: 0; /* Ensure this is below other elements */
+}

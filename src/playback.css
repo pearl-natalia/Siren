@@ -1,0 +1,25 @@
+#playbackPage {
+    text-align: center;
+    background-color: #f0f0f0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #playbackBtn {
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #61dafb;
+    color: black;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #playbackBtn:hover {
+    background-color: #4fa3c2;
+  }
+  
