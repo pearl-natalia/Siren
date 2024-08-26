@@ -9,7 +9,8 @@ const MapboxComponent = () => {
       style={{ width: "100vw", height: "calc(100% - 160px)" }}
     >
       <Map
-        mapboxAccessToken="pk.eyJ1IjoicGVhcmxuYXRhbGlhIiwiYSI6ImNtMGEzeG9mbjE4N3EybnBwajBkeW1zcDMifQ.5l4d-w-_k3w1vkYEy4RJOg"
+        const
+        mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
         initialViewState={{
           longitude: -122.4,
           latitude: 37.8,
