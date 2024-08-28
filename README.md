@@ -59,7 +59,7 @@ Continuing angle checking up to 100 meters from the initial street change ensure
 <br>
 
 <p align="center">
-<img width="60%" alt="Screenshot 2024-07-08 at 10 35 44 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/853b2dd7-0303-46dc-98c0-5f2eccaef8a4"](https://github.com/pearl-natalia/crash/assets/145855287/af708d81-c388-493c-8426-af4459558648">
+<img width="50%" alt="Screenshot 2024-07-08 at 10 35 44 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/853b2dd7-0303-46dc-98c0-5f2eccaef8a4"](https://github.com/pearl-natalia/crash/assets/145855287/af708d81-c388-493c-8426-af4459558648">
 </p>
 
 **Traffic signal**<br>
