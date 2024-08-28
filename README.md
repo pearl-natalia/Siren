@@ -47,7 +47,7 @@ These warnings aim to prevent a $325 fine for running a red light caught by the 
 When the distance to the intersection begins to increase over two frames, indicating that the vehicle is moving away, the warning is removed. The use of a driver routing API ensures accurate calculations of driving distances between coordinates A and B, which is essential as geographical distance may not accurately reflect the distance driven.
 
 <p align="center">
-<img width="678" alt="Screenshot 2024-07-08 at 10 32 04 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/cb880468-d3c4-4f8e-9d3c-7f8caa7c6e89">
+<img width="50%" alt="Screenshot 2024-07-08 at 10 32 04 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/cb880468-d3c4-4f8e-9d3c-7f8caa7c6e89">
 </p>
 
 <br>
