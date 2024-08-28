@@ -59,7 +59,7 @@ Continuing angle checking up to 100 meters from the initial street change ensure
 <br>
 
 <p align="center">
-<img width="1417" alt="Screenshot 2024-07-08 at 10 35 44 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/853b2dd7-0303-46dc-98c0-5f2eccaef8a4"](https://github.com/pearl-natalia/crash/assets/145855287/af708d81-c388-493c-8426-af4459558648">
+<img width="1417" alt="Screenshot 2024-07-08 at 10 35 44 PM" style="width:70%;" src="https://github.com/pearl-natalia/crash/assets/145855287/853b2dd7-0303-46dc-98c0-5f2eccaef8a4"](https://github.com/pearl-natalia/crash/assets/145855287/af708d81-c388-493c-8426-af4459558648">
 </p>
 
 **Traffic signal**<br>
@@ -69,5 +69,5 @@ The leftmost traffic light always indicates left turns, whether it's a designate
 
 To test the application, I drove around with the IDE running to determine Siren's accuracy with turns, speed, etc!
 <p align="center">
-<img width="50%" alt="Screenshot 2024-07-28 at 3 37 47 PM" src="https://github.com/user-attachments/assets/4408e7f9-34d4-4dd5-9fc8-4606e51693ca">
+<img width="50%" alt="Screenshot 2024-07-28 at 3 37 47 PM" style="width:30%;" src="https://github.com/user-attachments/assets/4408e7f9-34d4-4dd5-9fc8-4606e51693ca">
 </p>
