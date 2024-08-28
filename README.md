@@ -3,7 +3,7 @@
 Siren is a smart dash cam that uses computer vision and geolocation data to monitor driving behavior, track route history, and detect road violations directly on your mobile device. It generates geospatial insights to alert drivers about speeding, red light cameras, and other violations, promoting safer driving habits. These analytics can contribute to more precise insurance assessments, potentially reducing premiums over time, and assist in determining fault in case of accidents.
 
 <p align="center">
-<img width="60%" src="https://github.com/pearl-natalia/crash/assets/145855287/aefa20ef-6356-4344-b718-a9b3cf3c6a23" alt="Screenshot 2024-07-08 at 10 11 00 PM">
+<img width="95%" src="https://github.com/pearl-natalia/crash/assets/145855287/aefa20ef-6356-4344-b718-a9b3cf3c6a23" alt="Screenshot 2024-07-08 at 10 11 00 PM">
 </p>
 
 ### Traffic Light & Stop Sign Detection
@@ -12,13 +12,13 @@ The process begins with autonomously processing dashcam footage, segmenting it i
 By finely tuning YOLOv8, traffic lights are detected in each frame while filtering out irrelevant signals like bus or bike lights using a custom algorithm. The closest traffic light, identified by its lowest y-position in the frame, serves as the reference point. To note, aligned traffic lights overlap in position. These detections are then ordered from highest to lowest to eliminate non-overlapping signals and focus on relevant traffic lights within designated areas. Using HSV (hue, saturation, value) analysis within these regions, the system determines the current state of each traffic light (green, amber, red).
 
 <p align="center">
-<img width="60%" alt="Screenshot 2024-07-08 at 10 22 01 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/5777477c-3765-4afa-bd4c-d94e34c1cbce">
+<img width="95%" alt="Screenshot 2024-07-08 at 10 22 01 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/5777477c-3765-4afa-bd4c-d94e34c1cbce">
 </p>
 
 When a traffic light is detected, the frame is further processed using another CNN to identify 'no right turn' prohibition signs to track illegal right turns. If no traffic lights are detected, the system checks for stop signs instead. Once all detections are complete, the data is stored in a SQLite database along with real-time metrics and video timestamps for playback purposes.
 
 <p align="center">
-<img width="50%" alt="Screenshot 2024-07-08 at 10 25 54 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/35ea0efb-ffa2-43ed-91ec-803c6560f32d">
+<img width="95%" alt="Screenshot 2024-07-08 at 10 25 54 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/35ea0efb-ffa2-43ed-91ec-803c6560f32d">
 </p>
 
 ### Geographical Data
@@ -26,7 +26,7 @@ When a traffic light is detected, the frame is further processed using another C
 Simultaneously, in a separate thread, geographical data is captured to analyze driving behavior and track the vehicle's route. Using iCloud, the application receives GPS location data from the iPhone.
 
 <p align="center">
-<img width="50%" alt="Screenshot 2024-07-08 at 10 28 56 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/0770c5ba-dd0e-4814-81e9-6e8d680bf66d">
+<img width="95%" alt="Screenshot 2024-07-08 at 10 28 56 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/0770c5ba-dd0e-4814-81e9-6e8d680bf66d">
 </p>
 
 **Rolling Stop Signs**<br>
@@ -40,14 +40,14 @@ Dividing the distance traveled by several intervals (approximately every 12 seco
 The geographic locations of all red light camera intersections in major regions such as York, Toronto, Peel, Halton, Ottawa, Hamilton, and Guelph are publicly accessible on city and regional websites across southern Ontario. After manually searching these websites, I created a <a href="https://github.com/pearl-natalia/Siren/blob/master/geolocation/red-light-cameras.csv">CSV file</a> to catalog all the locations of red light cameras in these cities. Through reverse geocoding, the system determines the specific street a vehicle is on based on its coordinates. Integrated with driver routing data, it identifies if a vehicle is approaching any road connected to a red light camera intersection within 300m of a driving route.
 
 <p align="center">
-<img width="65%" alt="Screenshot 2024-07-28 at 3 49 37 PM" src="https://github.com/user-attachments/assets/736263be-5ca4-4ed7-9077-0a43444c2836">
+<img width="95%" alt="Screenshot 2024-07-28 at 3 49 37 PM" src="https://github.com/user-attachments/assets/736263be-5ca4-4ed7-9077-0a43444c2836">
 </p>
 
 These warnings aim to prevent a $325 fine for running a red light caught by the camera and discourage speeding through yellow lights.
 When the distance to the intersection begins to increase over two frames, indicating that the vehicle is moving away, the warning is removed. The use of a driver routing API ensures accurate calculations of driving distances between coordinates A and B, which is essential as geographical distance may not accurately reflect the distance driven.
 
 <p align="center">
-<img width="50%" alt="Screenshot 2024-07-08 at 10 32 04 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/cb880468-d3c4-4f8e-9d3c-7f8caa7c6e89">
+<img width="95%" alt="Screenshot 2024-07-08 at 10 32 04 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/cb880468-d3c4-4f8e-9d3c-7f8caa7c6e89">
 </p>
 
 <br>
@@ -59,7 +59,7 @@ Continuing angle checking up to 100 meters from the initial street change ensure
 <br>
 
 <p align="center">
-<img width="50%" alt="Screenshot 2024-07-08 at 10 35 44 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/853b2dd7-0303-46dc-98c0-5f2eccaef8a4"](https://github.com/pearl-natalia/crash/assets/145855287/af708d81-c388-493c-8426-af4459558648">
+<img width="95%" alt="Screenshot 2024-07-08 at 10 35 44 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/853b2dd7-0303-46dc-98c0-5f2eccaef8a4"](https://github.com/pearl-natalia/crash/assets/145855287/af708d81-c388-493c-8426-af4459558648">
 </p>
 
 **Traffic signal**<br>
@@ -69,5 +69,5 @@ The leftmost traffic light always indicates left turns, whether it's a designate
 
 To test the application, I drove around with the IDE running to determine Siren's accuracy with turns, speed, etc!
 <p align="center">
-<img width="40%" alt="Screenshot 2024-07-28 at 3 37 47 PM" src="https://github.com/user-attachments/assets/4408e7f9-34d4-4dd5-9fc8-4606e51693ca">
+<img width="95%" alt="Screenshot 2024-07-28 at 3 37 47 PM" src="https://github.com/user-attachments/assets/4408e7f9-34d4-4dd5-9fc8-4606e51693ca">
 </p>
