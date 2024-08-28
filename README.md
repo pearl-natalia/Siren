@@ -18,7 +18,7 @@ By finely tuning YOLOv8, traffic lights are detected in each frame while filteri
 When a traffic light is detected, the frame is further processed using another CNN to identify 'no right turn' prohibition signs to track illegal right turns. If no traffic lights are detected, the system checks for stop signs instead. Once all detections are complete, the data is stored in a SQLite database along with real-time metrics and video timestamps for playback purposes.
 
 <p align="center">
-<img width="25%" alt="Screenshot 2024-07-08 at 10 25 54 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/35ea0efb-ffa2-43ed-91ec-803c6560f32d">
+<img width="50%" alt="Screenshot 2024-07-08 at 10 25 54 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/35ea0efb-ffa2-43ed-91ec-803c6560f32d">
 </p>
 
 ### Geographical Data
@@ -26,7 +26,7 @@ When a traffic light is detected, the frame is further processed using another C
 Simultaneously, in a separate thread, geographical data is captured to analyze driving behavior and track the vehicle's route. Using iCloud, the application receives GPS location data from the iPhone.
 
 <p align="center">
-<img width="30%" alt="Screenshot 2024-07-08 at 10 28 56 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/0770c5ba-dd0e-4814-81e9-6e8d680bf66d">
+<img width="50%" alt="Screenshot 2024-07-08 at 10 28 56 PM" src="https://github.com/pearl-natalia/crash/assets/145855287/0770c5ba-dd0e-4814-81e9-6e8d680bf66d">
 </p>
 
 **Rolling Stop Signs**<br>
